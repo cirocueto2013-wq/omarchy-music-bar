@@ -1,0 +1,18 @@
+{
+  "refresh": "Refresh playlists",
+  "connectHint": "Starting local player…",
+  "search": "Search songs",
+  "recent": "Recent",
+  "results": "Results",
+  "loading": "Loading…",
+  "waiting": "Starting…",
+  "noRecent": "Songs you play appear here. Search for one to get started.",
+  "noResults": "Search for a song or artist.",
+  "nothingPlaying": "Nothing playing",
+  "previous": "Previous",
+  "next": "Next",
+  "playPause": "Play / pause",
+  "stop": "Stop",
+  "loadingTrack": "Preparing audio…",
+  "serviceError": "Could not start the local service."
+}

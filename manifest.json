@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "ciro.youtube-music",
+  "name": "Music Bar",
+  "version": "2.0.0",
+  "author": "Ciro",
+  "description": "Public YouTube search and audio playback in the Omarchy bar. No account or browser required.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Music Bar",
+    "description": "Search and play public music without signing in",
+    "category": "Media",
+    "defaultSection": "centerEnd",
+    "allowMultiple": false
+  },
+  "homepage": "https://github.com/cirocueto2013-wq/omarchy-music-bar"
+}

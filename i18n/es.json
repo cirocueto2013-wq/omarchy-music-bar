@@ -1,0 +1,18 @@
+{
+  "refresh": "Actualizar playlists",
+  "connectHint": "Iniciando el reproductor local…",
+  "search": "Buscar canciones",
+  "recent": "Recientes",
+  "results": "Resultados",
+  "loading": "Cargando…",
+  "waiting": "Iniciando…",
+  "noRecent": "Las canciones que reproduzcas aparecerán aquí. Busca una para empezar.",
+  "noResults": "Busca una canción o artista.",
+  "nothingPlaying": "Sin reproducción",
+  "previous": "Anterior",
+  "next": "Siguiente",
+  "playPause": "Reproducir / pausar",
+  "stop": "Detener",
+  "loadingTrack": "Preparando el audio…",
+  "serviceError": "No se pudo iniciar el servicio local."
+}
