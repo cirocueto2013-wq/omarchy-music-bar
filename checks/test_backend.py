@@ -34,6 +34,12 @@ class Checks(unittest.TestCase):
         self.backend.play_id=1;self.backend.play(item,1)
         self.assertEqual(self.backend.state['player']['title'],'A & B');self.assertEqual(self.backend.state['recent'][0]['id'],item['id'])
         self.assertTrue((music.STATE/'recent.json').exists())
+    def test_volume_is_clamped_and_persisted(self):
+        self.assertEqual(music.set_volume(-5)['volume'],0)
+        self.assertEqual(music.set_volume(140)['volume'],100)
+        self.assertEqual(music.read_volume(),100)
+        with self.assertRaises(ValueError):music.set_volume(float('nan'))
+        with self.assertRaises(ValueError):music.set_volume(True)
     def test_stream_origin_validation(self):
         item=music.track({'id':'sMcWOaJFuw0','title':'A'})
         music.extract=lambda *a:{'url':'file:///etc/passwd'}

@@ -14,5 +14,6 @@
   "playPause": "Play / pause",
   "stop": "Stop",
   "loadingTrack": "Preparing audio…",
-  "serviceError": "Could not start the local service."
+  "serviceError": "Could not start the local service.",
+  "volume": "Volume"
 }

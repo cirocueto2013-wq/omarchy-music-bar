@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """Public YouTube search and local mpv audio. No browser, cookies or credentials."""
-import concurrent.futures,fcntl,json,os,re,shutil,socket,socketserver,subprocess,sys,tempfile,threading,time
+import concurrent.futures,fcntl,json,math,os,re,shutil,socket,socketserver,subprocess,sys,tempfile,threading,time
 from pathlib import Path
 STATE=Path(os.environ.get('XDG_STATE_HOME',str(Path.home()/'.local/state')))/'omarchy/music-public'
 RUNTIME=Path(os.environ.get('XDG_RUNTIME_DIR',f'/tmp/omarchy-music-{os.getuid()}'))/'omarchy-music-public'
@@ -26,6 +26,22 @@ def track(item):
     art=item.get('art') or (thumbs[-1].get('url','') if thumbs else '')
     if not re.match(r'^https://(?:[a-z0-9-]+\.)*(?:ytimg\.com|googleusercontent\.com|ggpht\.com)/',art):art=''
     return dict(id=ident,kind='song',title=str(item.get('title') or ident)[:300],subtitle=str(item.get('subtitle') or item.get('uploader') or item.get('channel') or '')[:300],art=art[:1500],duration=item.get('duration') or 0)
+
+def read_volume():
+    try:
+        value=float(json.loads((STATE/'volume.json').read_text()).get('volume',70))
+        return max(0,min(100,value)) if math.isfinite(value) else 70
+    except (OSError,ValueError,TypeError,AttributeError):return 70
+
+def set_volume(value):
+    if isinstance(value,bool):raise ValueError('Invalid volume')
+    number=float(value)
+    if not math.isfinite(number):raise ValueError('Invalid volume')
+    number=max(0,min(100,number))
+    write_json(STATE/'volume.json',{'volume':number})
+    try:Player().command('set_property','volume',number)
+    except OSError:pass
+    return {'ok':True,'volume':number}
 
 def extract(query,search=True):
     tool=shutil.which('yt-dlp')
@@ -60,6 +76,7 @@ class Player:
             if path.exists():
                 self.event_socket=socket.socket(socket.AF_UNIX);self.event_socket.connect(str(path))
                 threading.Thread(target=self.events,daemon=True).start()
+                self.command('set_property','volume',read_volume())
                 return
             if self.proc.poll() is not None:break
             time.sleep(.05)
@@ -216,6 +233,7 @@ def serve():
         backend.player.close();backend.pool.shutdown(wait=False,cancel_futures=True);backend.state['connected']=False;backend.publish();server.server_close();path.unlink(missing_ok=True)
 
 def request(data):
+    if data.get('action')=='volume':return set_volume(data.get('value'))
     def call():
         with socket.socket(socket.AF_UNIX) as client:
             client.settimeout(3);client.connect(str(RUNTIME/'control.sock'));client.sendall((json.dumps(data)+'\n').encode());return json.loads(client.makefile('rb').readline(16384))

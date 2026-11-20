@@ -2,7 +2,7 @@
 
 A free, open source music panel for the Omarchy top bar. Search public YouTube music and play audio without a Google account, browser, extension or subscription.
 
-Click the monochrome music icon beside the weather to open the native Omarchy panel. Search for an artist or song, click a result, and use previous, play/pause, next and stop. The current search becomes the playback queue. Recent tracks stay on your computer.
+Click the monochrome music icon beside the weather to open the native Omarchy panel. Search for an artist or song, click a result, and use previous, play/pause, next, stop and volume (0–100%). Volume is saved locally and does not change the system volume. The current search becomes the playback queue. Recent tracks stay on your computer.
 
 This is an independent community plugin, not an official YouTube or Google product. It does not unlock paid, private, age restricted or otherwise unavailable content. YouTube may require verification for some content or connections; in that case the panel reports the failure and does not request credentials or bypass verification. Continued service availability is not guaranteed.
 

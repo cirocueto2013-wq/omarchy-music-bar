@@ -14,5 +14,6 @@
   "playPause": "Reproducir / pausar",
   "stop": "Detener",
   "loadingTrack": "Preparando el audio…",
-  "serviceError": "No se pudo iniciar el servicio local."
+  "serviceError": "No se pudo iniciar el servicio local.",
+  "volume": "Volumen"
 }

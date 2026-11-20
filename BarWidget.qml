@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls as Controls
 import Quickshell
 import Quickshell.Io
 import qs.Ui
@@ -13,6 +14,8 @@ Panel {
   property var snapshot: ({})
   property double now: Date.now()/1000
   property int section: 0
+  property real currentVolume: 70
+  property real pendingVolume: 70
   property bool pendingSearch: false
   property string processError: ""
   property var queuedCommands: []
@@ -46,6 +49,18 @@ Panel {
     watchChanges: true
     onFileChanged: reload()
     onLoaded: { try { root.snapshot=JSON.parse(text()); root.pendingSearch=!!root.snapshot.busy } catch(e) {} }
+  }
+  FileView {
+    id: volumeFile
+    path: Quickshell.env("HOME")+"/.local/state/omarchy/music-public/volume.json"
+    watchChanges: true
+    onFileChanged: reload()
+    onLoaded: { try { root.currentVolume=Math.max(0,Math.min(100,Number(JSON.parse(text()).volume))) } catch(e) {} }
+  }
+  Timer {
+    id: volumeDebounce
+    interval: 120
+    onTriggered: root.send({action:"volume",value:root.pendingVolume})
   }
   Timer { interval: 1500; running: true; repeat: true; onTriggered: root.readState() }
   Process {
@@ -195,6 +210,45 @@ Panel {
           Button { iconText: "󰒭"; tooltipText: strings.t("next"); enabled: root.connected && !!root.player.title; onClicked: root.transport("next") }
         }
         Text { width: (parent.width-transport.width-parent.spacing*2)/2; anchors.verticalCenter: parent.verticalCenter; horizontalAlignment: Text.AlignRight; text: root.formatTime(root.player.duration); textFormat: Text.PlainText; font.family: Style.font.family; font.pixelSize: Style.font.caption; color: Commons.Color.foreground }
+      }
+      Row {
+        width: parent.width; spacing: Style.space(10)
+        Text {
+          id: volumeLabel
+          anchors.verticalCenter: parent.verticalCenter
+          text: strings.t("volume"); textFormat: Text.PlainText
+          color: Commons.Color.foreground; font.family: Style.font.family; font.pixelSize: Style.font.caption
+        }
+        Controls.Slider {
+          id: volumeSlider
+          width: parent.width-volumeLabel.width-volumeNumber.width-parent.spacing*2
+          from: 0; to: 100; stepSize: 1
+          Accessible.name: strings.t("volume")
+          onMoved: { root.pendingVolume=value; volumeDebounce.restart() }
+          onPressedChanged: if(!pressed) { volumeDebounce.stop(); root.send({action:"volume",value:value}) }
+          Binding { target: volumeSlider; property: "value"; value: root.currentVolume; when: !volumeSlider.pressed }
+          background: Rectangle {
+            x: volumeSlider.leftPadding
+            y: volumeSlider.topPadding+volumeSlider.availableHeight/2-height/2
+            width: volumeSlider.availableWidth; height: Style.space(3)
+            color: Style.normalFillFor(Commons.Color.foreground,Commons.Color.accent)
+            Rectangle { width: parent.width*volumeSlider.visualPosition; height: parent.height; color: Commons.Color.foreground }
+          }
+          handle: Rectangle {
+            x: volumeSlider.leftPadding+volumeSlider.visualPosition*(volumeSlider.availableWidth-width)
+            y: volumeSlider.topPadding+volumeSlider.availableHeight/2-height/2
+            implicitWidth: Style.space(12); implicitHeight: Style.space(12)
+            radius: Math.min(Style.space(3),Style.cornerRadius)
+            color: volumeSlider.pressed ? Commons.Color.accent : Commons.Color.foreground
+          }
+        }
+        Text {
+          id: volumeNumber
+          anchors.verticalCenter: parent.verticalCenter
+          width: Style.space(34); horizontalAlignment: Text.AlignRight
+          text: Math.round(volumeSlider.pressed ? volumeSlider.value : root.currentVolume)+"%"
+          textFormat: Text.PlainText; color: Commons.Color.foreground; font.family: Style.font.family; font.pixelSize: Style.font.caption
+        }
       }
     }
   }
